@@ -1,0 +1,41 @@
+.k-line-chart-container {
+    display: flex;
+    flex-direction: column;
+    /*margin: 15px;*/
+    border-radius: 2px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, .3);
+    background-color: #FFFFFF;
+    padding: 16px 6px 16px 16px;
+    height: 600px;
+}
+
+.k-line-chart-container .k-line-chart {
+    display: flex;
+    justify-content: center;
+    flex: 1;
+}
+
+.k-line-chart-container .k-line-chart-menu-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: end;
+    align-items: center;
+    margin-top: 10px;
+    margin-right: 50px;
+    font-size: 12px;
+    color: #606060;
+}
+
+.k-line-chart-container .k-line-chart-menu-container button {
+    cursor: pointer;
+    background-color: #1677FF;
+    border-radius: 2px;
+    margin-right: 8px;
+    height: 24px;
+    line-height: 26px;
+    padding: 0 6px;
+    font-size: 12px;
+    color: #fff;
+    border: none;
+    outline: none;
+}
