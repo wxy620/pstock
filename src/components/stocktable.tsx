@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import type {TableColumnsType} from 'antd';
 import { Flex, Space, Statistic, Table, TableProps} from 'antd';
 import {ArrowDownOutlined, ArrowUpOutlined,} from '@ant-design/icons'
@@ -7,6 +7,8 @@ import {StockHistDataEx} from "../model/stock.ts";
 import {SorterResult} from "antd/es/table/interface";
 import {searchStore} from "./stock_search.tsx";
 import {observer} from "mobx-react-lite";
+import {Link} from "react-router-dom";
+import {menuStore} from "./mysider.tsx";
 
 const getNumStyle = (record:StockHistDataEx) => {
     const change_rate = record.pct_chg
@@ -107,40 +109,22 @@ const columns: TableColumnsType<StockHistDataEx> = [
     },
 
     {
-        title: 'Action',
+        title: 'action',
         key: 'operation',
         fixed: 'right',
         width: 100,
-        render: () => <a>action</a>,
+        render: (value, record, index) =>
+            <Link to="/kline" onClick={()=>{
+                searchStore.setSearchParams({
+                    symbol: record.symbol,
+                    followOnly: false,
+                })
+                console.log("menu change click",menuStore.selectKey)
+                menuStore.setKey(["2"])
+            }}>K 线</Link>,
     },
 ];
 
-const dataSource: StockHistDataEx[] = [
-    {
-        name: '平安银行', symbol: '000001', new_price: 11.62, pct_chg: 0.26, volume: 714646, date: '2024-12-20',
-        open: 0,
-        close: 0,
-        high: 0,
-        low: 0,
-        price_change: 0,
-        turnover: 0,
-        amplitude: 0,
-        turnover_rate: 0,
-        key: 1
-    },
-    {
-        name: '万  科Ａ', symbol: '000002', new_price: 7.820, pct_chg: -1.14, volume: 1164400, date: '2024-12-20',
-        open: 0,
-        close: 0,
-        high: 0,
-        low: 0,
-        price_change: 0,
-        turnover: 0,
-        amplitude: 0,
-        turnover_rate: 0,
-        key: 0
-    },
-];
 
 const StockTable: React.FC = () => {
     const handleTblChange: TableProps<StockHistDataEx>['onChange'] = (pagination, filters, sorter, extra) => {
@@ -158,6 +142,17 @@ const StockTable: React.FC = () => {
     };
 
 
+    useEffect(() => {
+        if (searchStore.result != undefined){
+            const { symbol, inputText} = searchStore.result
+            if(symbol != inputText){
+                searchStore.setSearchParams({
+                    symbol: inputText,
+                    followOnly: false
+                })
+            }
+        }
+    }, []);
     return (
         <>
             <Space direction={"vertical"} style={{width:'100%'}}>

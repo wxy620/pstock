@@ -12,6 +12,7 @@ import {makeAutoObservable} from "mobx";
 
 export class StockSearchStore {
     sortOrders?: Sorter
+    searchParams?: SearchParams
     result?: SearchResult
     constructor() {
         makeAutoObservable(this)
@@ -19,6 +20,10 @@ export class StockSearchStore {
 
     setSortOrders(value: Sorter){
         this.sortOrders = value
+    }
+
+    setSearchParams(value: SearchParams) {
+        this.searchParams = value
     }
 
     setResult(value: SearchResult){
@@ -49,21 +54,19 @@ type SearchParams ={
 }
 
 export  type SearchResult = {
-    inputText?: string
+    inputText?: string;
+    symbol?: string;
     data?: StockHistDataEx[]
 }
 
 export type Sorter = SorterResult<any>[] | SortOrder[] | undefined
 
-const Stock_search =  observer(({ searchStore }: {searchStore: StockSearchStore}) =>  {
+const StockSearch =  observer(({ searchStore }: {searchStore: StockSearchStore}) =>  {
 
     const [searchText, setSearchText] = useState<string>()
 
     const [options, setOptions] = useState<AutoCompleteProps['options']>([]);
 
-    const [searchParams, setSearchParams] = useState<SearchParams>({
-        followOnly: false
-    })
 
     const fetchData = () => {
 
@@ -83,10 +86,11 @@ const Stock_search =  observer(({ searchStore }: {searchStore: StockSearchStore}
         (async()=>{
             await invoke<StockHistDataEx[]>('query_stock_list', {
                 sortOrders: sortOrders ?? null,
-                searchParams: searchParams,
+                searchParams: searchStore.searchParams,
             }).then((message) =>{
                 searchStore.setResult({
                     inputText: searchText,
+                    symbol: searchStore.searchParams?.symbol,
                     data: message
                 })
             }).catch((_)=>{})
@@ -94,7 +98,7 @@ const Stock_search =  observer(({ searchStore }: {searchStore: StockSearchStore}
     };
 
     useEffect(fetchData, [
-        searchParams, searchStore.sortOrders
+        searchStore.searchParams, searchStore.sortOrders
     ]);
 
 
@@ -141,10 +145,12 @@ const Stock_search =  observer(({ searchStore }: {searchStore: StockSearchStore}
     });
 
     const handleClick= (_: React.MouseEvent<HTMLButtonElement>) =>{
-        setSearchParams ({
+        const market = searchStore.searchParams?.market
+        const followOnly = searchStore.searchParams?.followOnly?? false
+        searchStore.setSearchParams ({
             symbol: searchText,
-            market: searchParams?.market,
-            followOnly:searchParams?.followOnly ?? false
+            market: market,
+            followOnly: followOnly ?? false
         });
     };
 
@@ -169,4 +175,4 @@ const Stock_search =  observer(({ searchStore }: {searchStore: StockSearchStore}
 
 })
 
-export default  Stock_search;
+export default  StockSearch;

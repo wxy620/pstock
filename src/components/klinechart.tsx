@@ -257,6 +257,7 @@ const KLineChart: React.FC<{ menuCollapsed: boolean }> = ({menuCollapsed}) => {
     }, [menuCollapsed]);
 
 
+
     useEffect(() => {
         const result = searchStore.result
         console.log(result?.inputText)

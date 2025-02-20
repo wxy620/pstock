@@ -14,7 +14,7 @@ import {
 import {Button, Flex, MenuProps} from 'antd';
 import { Layout, Menu, theme } from 'antd';
 import './App.css'
-import {Link, BrowserRouter, Routes, Route} from "react-router-dom";
+import {BrowserRouter, Routes, Route} from "react-router-dom";
 
 import KLineChart from "./components/klinechart.tsx";
 import RTKLineChart from "./components/rt-klinechart.tsx";
@@ -22,68 +22,20 @@ import StockTable from "./components/stocktable.tsx";
 
 import {emit, listen} from "@tauri-apps/api/event";
 import {IPayload} from "./model/payload.ts";
-import {invoke} from "@tauri-apps/api/core";
 import Stock_search , {searchStore} from "./components/stock_search.tsx";
+import MySider, {menuStore} from "./components/mysider.tsx";
 
 
-const { Header, Content, Footer, Sider } = Layout;
 
-const siderStyle: React.CSSProperties = {
-    overflow: 'auto',
-    height: 'auto',
-    position: 'initial',
-    insetInlineStart: 0,
-    top: 0,
-    bottom: 0,
-    scrollbarWidth: 'thin',
-    scrollbarGutter: 'stable',
-};
+const { Header, Content, Footer } = Layout;
 
 
-type MenuItem = Required<MenuProps>['items'][number];
-const items: MenuItem[] = [
-    { key: '1', icon: <BarChartOutlined />, label: <Link to='/stocklist'>列表</Link>,},
-    { key: '2', icon: <CloudOutlined />, label: <Link to='/kline'>个股</Link>,  },
-    { key: '3', icon: <AppstoreOutlined />, label: <Link to='/rt'>分时</Link> },
-    {
-        key: 'sub1',
-        label: 'Navigation One',
-        icon: <TeamOutlined />,
-        children: [
-            { key: '5', label: 'Option 5' },
-            { key: '6', label: 'Option 6' },
-            { key: '7', label: 'Option 7' },
-            { key: '8', label: 'Option 8' },
-        ],
-    },
-    {
-        key: 'sub2',
-        label: 'Navigation Two',
-        icon: <AppstoreOutlined />,
-        children: [
-            { key: '9', label: 'Option 9' },
-            { key: '10', label: 'Option 10' },
-            {
-                key: 'sub3',
-                label: 'Submenu',
-                children: [
-                    { key: '11', label: 'Option 11' },
-                    { key: '12', label: 'Option 12' },
-                ],
-            },
-        ],
-    },
-];
 
 const App: React.FC = () => {
-    const [current, setCurrent] = useState('1');
     const [collapsed, setCollapsed] = useState(true);
     const {
         token: { colorBgContainer, borderRadiusLG },
     } = theme.useToken();
-
-    const siderRef = useRef(null);
-
 
     useEffect(() => {
 
@@ -112,13 +64,7 @@ const App: React.FC = () => {
     return (
         <BrowserRouter>
         <Layout hasSider>
-            <Sider ref={siderRef}
-                /** 自带的collapsed开关 **/
-                   trigger={null}
-                   collapsible collapsed={collapsed} style={siderStyle}  onCollapse={(value)=> setCollapsed(value)}>
-                <div className="demo-logo-vertical" />
-                    <Menu theme="dark"  mode="inline" defaultSelectedKeys={[current]}  items={items} />
-            </Sider>
+            <MySider  collapsed={collapsed} menuStore={menuStore}/>
             <Layout>
                 <Header style={{ padding: 0, background: colorBgContainer }} >
                     <Flex vertical={false} style={{alignItems:"center"}}>
